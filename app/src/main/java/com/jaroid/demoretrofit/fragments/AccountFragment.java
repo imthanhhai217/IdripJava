@@ -61,6 +61,10 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     private void initView(View view) {
         ButterKnife.bind(this, view);
 
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("USER_DATA",Context.MODE_PRIVATE);
+        String userName = sharedPreferences.getString("USER_NAME","null");
+        edtUser.setHint(userName);
+
         btnSave.setOnClickListener(this);
     }
 
@@ -77,7 +81,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     private void saveUser() {
         String userName = edtUser.getText().toString().trim();
 
-        SharedPreferences mySharef = getActivity().getSharedPreferences("USER_DATA", Context.MODE_PRIVATE);
+        SharedPreferences mySharef = getActivity()
+                .getSharedPreferences("USER_DATA", Context.MODE_PRIVATE);
 
         SharedPreferences.Editor editor = mySharef.edit();
         editor.putString("USER_NAME", userName);
