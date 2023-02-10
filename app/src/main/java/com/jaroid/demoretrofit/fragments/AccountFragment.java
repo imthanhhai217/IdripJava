@@ -1,5 +1,7 @@
 package com.jaroid.demoretrofit.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +18,7 @@ import com.jaroid.demoretrofit.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AccountFragment extends Fragment {
+public class AccountFragment extends Fragment implements View.OnClickListener {
 
     @BindView(R.id.edtUser)
     EditText edtUser;
@@ -58,5 +60,27 @@ public class AccountFragment extends Fragment {
 
     private void initView(View view) {
         ButterKnife.bind(this, view);
+
+        btnSave.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnSave:
+                saveUser();
+                break;
+        }
+
+    }
+
+    private void saveUser() {
+        String userName = edtUser.getText().toString().trim();
+
+        SharedPreferences mySharef = getActivity().getSharedPreferences("USER_DATA", Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = mySharef.edit();
+        editor.putString("USER_NAME", userName);
+        editor.commit();
     }
 }
