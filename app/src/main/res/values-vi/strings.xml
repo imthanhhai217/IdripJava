@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DemoRetrofit</string>
+    <string name="hot_deals">Bán chạy</string>
+    <string name="see_all">Xem thêm</string>
+    <string name="most_popular">Phổ biến nhất</string>
+</resources>

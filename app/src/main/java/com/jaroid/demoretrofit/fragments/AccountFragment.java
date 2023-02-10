@@ -1,14 +1,19 @@
 package com.jaroid.demoretrofit.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,7 +23,10 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.jaroid.demoretrofit.R;
+import com.jaroid.demoretrofit.activities.MainActivity;
 import com.jaroid.demoretrofit.model.Product;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +45,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     TextView tvPrice;
     @BindView(R.id.tvRating)
     TextView tvRating;
+    @BindView(R.id.swChangeLanguage)
+    Switch swChangeLanguage;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -88,6 +98,39 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         }
 
         btnSave.setOnClickListener(this);
+
+        swChangeLanguage.setChecked(sharedPreferences.getBoolean("IS_EN", true));
+        swChangeLanguage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    //Người dùng chọn tiếng Anh
+                    changeToLocate("en");
+                    sharedPreferences.edit().putBoolean("IS_EN", true).commit();
+                } else {
+                    //Người dùng chọn tiếng Việt
+                    changeToLocate("vi");
+                    sharedPreferences.edit().putBoolean("IS_EN", false).commit();
+                }
+            }
+        });
+    }
+
+    private void changeToLocate(String language) {
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+
+        Configuration configuration = getActivity().getResources().getConfiguration();
+        configuration.setLocale(locale);
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        getResources().updateConfiguration(configuration, displayMetrics);
+
+        resetActivity();
+    }
+
+    private void resetActivity() {
+        startActivity(new Intent(getActivity(), MainActivity.class));
+        getActivity().finish();
     }
 
     private void bindProductData(Product product) {
