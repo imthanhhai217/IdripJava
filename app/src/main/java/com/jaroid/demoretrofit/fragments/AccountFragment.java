@@ -8,12 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.jaroid.demoretrofit.R;
+import com.jaroid.demoretrofit.model.Product;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +29,14 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     EditText edtUser;
     @BindView(R.id.btnSave)
     Button btnSave;
+    @BindView(R.id.imgProduct)
+    ImageView imgProduct;
+    @BindView(R.id.tvProductName)
+    TextView tvProductName;
+    @BindView(R.id.tvPrice)
+    TextView tvPrice;
+    @BindView(R.id.tvRating)
+    TextView tvRating;
 
     public AccountFragment() {
         // Required empty public constructor
@@ -61,11 +74,27 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
     private void initView(View view) {
         ButterKnife.bind(this, view);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("USER_DATA",Context.MODE_PRIVATE);
-        String userName = sharedPreferences.getString("USER_NAME","null");
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("USER_DATA", Context.MODE_PRIVATE);
+        String userName = sharedPreferences.getString("USER_NAME", "null");
         edtUser.setHint(userName);
 
+        String productData = sharedPreferences.getString("DATA_PRODUCT", null);
+        if (productData != null) {
+            Gson gson = new Gson();
+            Product product = gson.fromJson(productData, Product.class);
+            if (product != null) {
+                bindProductData(product);
+            }
+        }
+
         btnSave.setOnClickListener(this);
+    }
+
+    private void bindProductData(Product product) {
+        Glide.with(this).load(product.getImages().get(0)).into(imgProduct);
+        tvProductName.setText(product.getTitle());
+        tvPrice.setText(product.getPrice() + "$");
+        tvRating.setText(product.getRating() + "");
     }
 
     @Override

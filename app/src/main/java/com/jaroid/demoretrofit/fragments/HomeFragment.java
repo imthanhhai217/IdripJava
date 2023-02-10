@@ -1,5 +1,7 @@
 package com.jaroid.demoretrofit.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.jaroid.demoretrofit.R;
 import com.jaroid.demoretrofit.adapters.ProductAdapter;
 import com.jaroid.demoretrofit.api.DummyServices;
@@ -118,11 +121,18 @@ public class HomeFragment extends Fragment {
         mHotDeals.clear();
         mHotDeals = (ArrayList<Product>) data
                 .stream()
-                .filter(p -> p.getDiscountPercentage() >= 15.0
+                .filter(p -> p.getDiscountPercentage() >= 10.0
                 ).collect(Collectors.toList());
 
         Log.d(TAG, "fetchHotDeals: " + mHotDeals.size());
         mHotDealAdapter.setData(mHotDeals);
+
+        Product saveProduct = mHotDeals.get(0);
+
+        Gson gson = new Gson();
+        String dataProduct = gson.toJson(saveProduct);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("USER_DATA", Context.MODE_PRIVATE);
+        sharedPreferences.edit().putString("DATA_PRODUCT", dataProduct).commit();
     }
 
 
