@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 import com.jaroid.demoretrofit.R;
 import com.jaroid.demoretrofit.adapters.ProductAdapter;
 import com.jaroid.demoretrofit.api.DummyServices;
+import com.jaroid.demoretrofit.databases.SqlHelper;
+import com.jaroid.demoretrofit.interfaces.WishListChangeListener;
 import com.jaroid.demoretrofit.model.GetAllProductsResponse;
 import com.jaroid.demoretrofit.model.Product;
 import com.jaroid.demoretrofit.retrofit.RetrofitClient;
@@ -50,6 +52,8 @@ public class HomeFragment extends Fragment {
     private ArrayList<Product> mMostPopular;
     private DummyServices mDummyServices;
 
+    private SqlHelper sqlHelper;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -81,6 +85,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void initData() {
+        sqlHelper = new SqlHelper(getContext());
+
         mDummyServices = RetrofitClient.getInstances().create(DummyServices.class);
         mDummyServices.getAllProduct(0).enqueue(new Callback<GetAllProductsResponse>() {
             @Override
@@ -149,6 +155,41 @@ public class HomeFragment extends Fragment {
         mHotDeals = new ArrayList<>();
         mMostPopular = new ArrayList<>();
         mHotDealAdapter = new ProductAdapter(mHotDeals);
+        mHotDealAdapter.setWishListChangeListener(hotDealWishListChangeListener);
         mMostPopularAdapter = new ProductAdapter(mMostPopular);
+        mMostPopularAdapter.setWishListChangeListener(mostPopularWishListChangeListener);
     }
+
+    private WishListChangeListener hotDealWishListChangeListener = new WishListChangeListener() {
+        @Override
+        public void onAddWishList(int position) {
+            Product product = mHotDeals.get(position);
+            product.setWishList(true);
+            mHotDeals.set(position, product);
+            mHotDealAdapter.notifyItemChanged(position);
+
+            sqlHelper.addWish(product.getId(), product.getTitle(), product.getPrice() + "");
+        }
+
+        @Override
+        public void onRemoveWishList(int position) {
+            Product product = mHotDeals.get(position);
+            product.setWishList(false);
+            mHotDeals.set(position, product);
+            mHotDealAdapter.notifyItemChanged(position);
+
+        }
+    };
+
+    private WishListChangeListener mostPopularWishListChangeListener = new WishListChangeListener() {
+        @Override
+        public void onAddWishList(int id) {
+
+        }
+
+        @Override
+        public void onRemoveWishList(int id) {
+
+        }
+    };
 }

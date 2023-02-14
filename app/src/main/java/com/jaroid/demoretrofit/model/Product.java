@@ -40,6 +40,7 @@ public class Product {
     @SerializedName("images")
     @Expose
     private List<String> images;
+    private boolean isWishList;
 
     /**
      * No args constructor for use in serialization
@@ -180,5 +181,13 @@ public class Product {
                 ", thumbnail='" + thumbnail + '\'' +
                 ", images=" + images +
                 '}';
+    }
+
+    public boolean isWishList() {
+        return isWishList;
+    }
+
+    public void setWishList(boolean wishList) {
+        isWishList = wishList;
     }
 }

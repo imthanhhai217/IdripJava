@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.jaroid.demoretrofit.R;
+import com.jaroid.demoretrofit.interfaces.WishListChangeListener;
 import com.jaroid.demoretrofit.model.Product;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     private List<Product> mListData;
     private Context mContext;
+    private WishListChangeListener wishListChangeListener;
 
     public ProductAdapter(List<Product> listData) {
         this.mListData = listData;
@@ -28,6 +30,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     public void setData(List<Product> listData) {
         this.mListData = listData;
         notifyDataSetChanged();
+    }
+
+    public void setWishListChangeListener(WishListChangeListener wishListChangeListener) {
+        this.wishListChangeListener = wishListChangeListener;
     }
 
     @NonNull
@@ -47,6 +53,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.tvProductName.setText(product.getTitle());
         holder.tvPrice.setText(product.getPrice() + "");
         holder.tvRating.setText(product.getRating() + "");
+        if (product.isWishList()) {
+            holder.imgWishList
+                    .setBackground(mContext
+                            .getResources()
+                            .getDrawable(R.drawable.ic_wishlist_selected, null));
+        } else {
+            holder.imgWishList
+                    .setBackground(mContext
+                            .getResources()
+                            .getDrawable(R.drawable.ic_wishlist_unselected, null));
+
+        }
     }
 
     @Override
@@ -54,7 +72,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return mListData.size();
     }
 
-    public class ProductViewHolder extends RecyclerView.ViewHolder {
+    public class ProductViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imgProduct, imgWishList, imgStar;
         TextView tvProductName, tvPrice, tvRating;
 
@@ -67,6 +85,22 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             tvProductName = itemView.findViewById(R.id.tvProductName);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvRating = itemView.findViewById(R.id.tvRating);
+
+            imgWishList.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.imgWishList:
+                    int position = getAdapterPosition();
+                    if (mListData.get(position).isWishList()) {
+                        wishListChangeListener.onRemoveWishList(position);
+                    } else {
+                        wishListChangeListener.onAddWishList(position);
+                    }
+                    break;
+            }
         }
     }
 }
