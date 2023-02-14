@@ -50,6 +50,7 @@ public class HomeFragment extends Fragment {
     private ProductAdapter mMostPopularAdapter;
     private ArrayList<Product> mHotDeals;
     private ArrayList<Product> mMostPopular;
+    private ArrayList<Integer> mWishList;
     private DummyServices mDummyServices;
 
     private SqlHelper sqlHelper;
@@ -86,6 +87,8 @@ public class HomeFragment extends Fragment {
 
     private void initData() {
         sqlHelper = new SqlHelper(getContext());
+        sqlHelper.getReadableDatabase();
+        mWishList = sqlHelper.getAllWishId();
 
         mDummyServices = RetrofitClient.getInstances().create(DummyServices.class);
         mDummyServices.getAllProduct(0).enqueue(new Callback<GetAllProductsResponse>() {
@@ -123,6 +126,10 @@ public class HomeFragment extends Fragment {
         mMostPopularAdapter.setData(mMostPopular);
     }
 
+    private boolean checkWishList(int id) {
+        return mWishList.contains(id);
+    }
+
     private void fetchHotDeals(List<Product> data) {
         mHotDeals.clear();
         mHotDeals = (ArrayList<Product>) data
@@ -131,6 +138,15 @@ public class HomeFragment extends Fragment {
                 ).collect(Collectors.toList());
 
         Log.d(TAG, "fetchHotDeals: " + mHotDeals.size());
+
+        for (int i = 0; i < mHotDeals.size(); i++) {
+            if (checkWishList(mHotDeals.get(i).getId())) {
+                Product product = mHotDeals.get(i);
+                product.setWishList(true);
+                mHotDeals.set(i, product);
+            }
+        }
+
         mHotDealAdapter.setData(mHotDeals);
 
         Product saveProduct = mHotDeals.get(0);

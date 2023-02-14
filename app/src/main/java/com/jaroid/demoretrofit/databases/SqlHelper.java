@@ -2,11 +2,14 @@ package com.jaroid.demoretrofit.databases;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
 
 public class SqlHelper extends SQLiteOpenHelper {
 
@@ -51,4 +54,20 @@ public class SqlHelper extends SQLiteOpenHelper {
         database.delete(TABLE_NAME, "id = ?", new String[]{id + ""});
         database.close();
     }
+
+
+    public ArrayList<Integer> getAllWishId() {
+        ArrayList<Integer> data = new ArrayList<>();
+        SQLiteDatabase sqLiteDatabase = getReadableDatabase();
+
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        if (cursor.moveToFirst()) {
+            do {
+                int currentId = cursor.getInt(0);
+                data.add(currentId);
+            } while (cursor.moveToNext());
+        }
+        return data;
+    }
+
 }
