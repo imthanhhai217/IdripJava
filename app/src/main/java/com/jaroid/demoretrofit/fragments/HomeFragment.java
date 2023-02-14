@@ -177,7 +177,7 @@ public class HomeFragment extends Fragment {
             product.setWishList(false);
             mHotDeals.set(position, product);
             mHotDealAdapter.notifyItemChanged(position);
-
+            sqlHelper.removeWish(product.getId());
         }
     };
 

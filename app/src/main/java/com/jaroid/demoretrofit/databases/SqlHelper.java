@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -32,6 +33,7 @@ public class SqlHelper extends SQLiteOpenHelper {
     }
 
     public void addWish(int id, String title, String price) {
+        Log.d("TAG", "addWish: " + id);
         SQLiteDatabase database = getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -40,6 +42,13 @@ public class SqlHelper extends SQLiteOpenHelper {
         contentValues.put(PRICE_COLUMN, price);
 
         database.insert(TABLE_NAME, null, contentValues);
+        database.close();
+    }
+
+    public void removeWish(int id) {
+        Log.d("TAG", "removeWish: " + id);
+        SQLiteDatabase database = getWritableDatabase();
+        database.delete(TABLE_NAME, "id = ?", new String[]{id + ""});
         database.close();
     }
 }
